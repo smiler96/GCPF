@@ -400,7 +400,7 @@ if __name__ == "__main__":
     from mpl_toolkits.mplot3d import Axes3D
     import time
 
-    n = 1000000
+    n = 10000
     n1 = 5000
     K = 5
     data, label = make_blobs(n_samples=n, n_features=512, centers=K)
@@ -421,7 +421,7 @@ if __name__ == "__main__":
 
     st = time.time()
     gmm = GMM_Batch(K=K)
-    _, pre_label = gmm.fit(X, batch_size=100000, max_iters=200)
+    _, pre_label = gmm.fit(X, batch_size=2500, max_iters=200)
     pre_label = pre_label.detach().cpu().numpy()
     print(gmm.alpha)
     et = time.time()

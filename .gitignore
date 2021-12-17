@@ -4,4 +4,5 @@
 .idea/
 _pycache_/
 */images/
-
+*.png
+*.bmp
