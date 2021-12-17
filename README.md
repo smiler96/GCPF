@@ -8,3 +8,8 @@
 </p> 
 
 ![Results](./results.bmp)
+
+ <p align="center">
+	<img src="./result_mvtec/dpfc_kmeans_covariance-224_256/wide_resnet50_2/k_10_10_10/roc_curve_wide_resnet50_2.png" />
+	<img src="./result_mvtec/dpfc_kmeans_covariance-224_256/wide_resnet50_2/k_10_10_10/roc_curve_wide_resnet50_2_image.png" />
+</p> 
