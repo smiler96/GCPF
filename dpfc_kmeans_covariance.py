@@ -100,8 +100,8 @@ def main():
 
         # testing
         test_criterion_pkl = os.path.join(temp_path, f"test_{args.backbone}_{class_name}_criterion.pkl")
-        # if not os.path.exists(test_criterion_pkl):
-        if True:
+        if not os.path.exists(test_criterion_pkl):
+        # if True:
             # 1. 提取训练集的特征
             train_feas_pkl = os.path.join(train_feas_path, f"train_{args.backbone}_{class_name}.pkl")
             # train_feas_pkl = os.path.join(temp_path, f"train_{args.backbone}_{class_name}.pkl")
