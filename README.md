@@ -2,4 +2,9 @@
 
 #### Q. Wan, L. Gao, X. Li and L. Wen, "Industrial Image Anomaly Localization Based on Gaussian Clustering of Pre-trained Feature," in IEEE Transactions on Industrial Electronics, doi: 10.1109/TIE.2021.3094452.
 ![Results](./gcpf.bmp)
+ 
+ <p align="center">
+	<img src="score.bmp" />
+</p> 
+
 ![Results](./results.bmp)

@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 from sklearn.covariance import LedoitWolf
 from scipy.spatial.distance import mahalanobis
 from embedding import _kmeans_fun_gpu, _kgaussians_fun_gpu
-
+import time
 import random
 
 def parse_args():
@@ -84,7 +84,9 @@ def main():
     model = model.to(device).eval()
     total_pixel_pro_auc = []
     total_pixel_level_ROCAUC = []
-    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+    total_image_level_ROCAUC = []
+    fig, ax = plt.subplots(1, 1, figsize=(10, 10)) 
+    fig1, ax1 = plt.subplots(1, 1, figsize=(10, 10))
     center_nums = {'layer1': args.k, 'layer2': args.k, 'layer3': args.k}
     for class_name in MVTec_CLASS_NAMES:
 
@@ -100,8 +102,8 @@ def main():
 
         # testing
         test_criterion_pkl = os.path.join(temp_path, f"test_{args.backbone}_{class_name}_criterion.pkl")
-        if not os.path.exists(test_criterion_pkl):
-        # if True:
+        # if not os.path.exists(test_criterion_pkl):
+        if True:
             # 1. 提取训练集的特征
             train_feas_pkl = os.path.join(train_feas_path, f"train_{args.backbone}_{class_name}.pkl")
             # train_feas_pkl = os.path.join(temp_path, f"train_{args.backbone}_{class_name}.pkl")
@@ -154,8 +156,13 @@ def main():
             test_y_list = []
             test_mask_list = []
             score_map_list = []
+            score_image_list = []
+            
+            total_time = 0
+            numbers = 0
             # 2. 提取测试集的特征
             for x, y, mask in tqdm(testloader, desc=f"[{class_name} test feature extract]", ascii=True, position=0, leave=True, ncols=80):
+                ssst = time.time()
                 torch.cuda.empty_cache()
                 test_feas = OrderedDict([('layer1', []), ('layer2', []), ('layer3', []), ])
 
@@ -202,9 +209,15 @@ def main():
                     score_maps.append(score_map)
                 # average distance between the features
                 score_map = torch.mean(torch.cat(score_maps, 0), dim=0)
+                
+                eeet = time.time()
+                total_time += eeet - ssst
+                numbers += 1
+
                 # apply gaussian smoothing on the score map
                 score_map = gaussian_filter(score_map.squeeze().cpu().detach().numpy(), sigma=4)
                 score_map_list.append(np.expand_dims(score_map, axis=0))
+                score_image_list.append(np.max(score_map))
 
             # pro_auc_score = cal_pro_metric(test_mask_list, score_map_list, class_name=class_name, fpr_thresh=0.3,
             #                                max_steps=2000)
@@ -229,30 +242,53 @@ def main():
             # calculate per-pixel level ROCAUC
             fpr, tpr, _ = roc_curve(flatten_mask_list, flatten_score_map_list)
             pixel_level_ROCAUC = roc_auc_score(flatten_mask_list, flatten_score_map_list)
+            
+            
+            flatten_y_list = np.array(test_y_list).ravel()
+            flatten_score_image_list = np.array(score_image_list).ravel()
+            fpr1, tpr1, _ = roc_curve(flatten_y_list, flatten_score_image_list)
+            image_level_ROCAUC = roc_auc_score(flatten_y_list, flatten_score_image_list)
+
             with open(test_criterion_pkl, 'wb') as f:
-                pickle.dump([fpr, tpr, pixel_level_ROCAUC, pro_auc_score], f)
+                pickle.dump([fpr, tpr, pixel_level_ROCAUC, pro_auc_score, image_level_ROCAUC], f)
+
         else:
             with open(test_criterion_pkl, 'rb') as f:
-                fpr, tpr, pixel_level_ROCAUC, pro_auc_score = pickle.load(f)
-        logger.info(f"{class_name} pro auc is: {pro_auc_score:.5f} at 0.3 FPR:")
-        logger.info('%s pixel ROCAUC: %.3f' % (class_name, pixel_level_ROCAUC))
+                fpr, tpr, pixel_level_ROCAUC, pro_auc_score, image_level_ROCAUC = pickle.load(f)
+        # logger.info(f"{class_name} pro auc is: {pro_auc_score:.5f} at 0.3 FPR:")
         # print(f"{class_name} pro auc is: {pro_auc_score:.4f} at 0.3 FPR:")
-        logger.info('%s pixel ROCAUC: %.5f' % (class_name, pixel_level_ROCAUC))
+        # logger.info('%s pixel ROCAUC: %.5f' % (class_name, pixel_level_ROCAUC))
         # logger.info(f"\n")
+
+        avg_time = total_time/numbers
+        logger.info(f"{class_name} time: {avg_time:.5f}")
+        logger.info('%s pixel ROCAUC: %.3f' % (class_name, pixel_level_ROCAUC))
         ax.plot(fpr, tpr, label='%s ROCAUC: %.3f' % (class_name, pixel_level_ROCAUC))
         total_pixel_level_ROCAUC.append(pixel_level_ROCAUC)
+
+        logger.info('%s image ROCAUC: %.5f' % (class_name, image_level_ROCAUC))
+        ax1.plot(fpr1, tpr1, label='%s ROCAUC: %.3f' % (class_name, image_level_ROCAUC))
+        total_image_level_ROCAUC.append(image_level_ROCAUC)
 
     # avr_pro_auc = np.mean(np.array(total_pixel_pro_auc))
     # logger.info(f"Average PRO: {avr_pro_auc:.3f}")
 
     avg_pixel_level_ROCAUC = np.mean(np.array(total_pixel_level_ROCAUC))
-    logger.info(f"Average pixel level ROCAUC: {avg_pixel_level_ROCAUC:.5f}")
+    avg_image_level_ROCAUC = np.mean(np.array(total_image_level_ROCAUC))
+    logger.info(f"Average pixel level ROCAUC: {avg_pixel_level_ROCAUC:.3f}")
+    logger.info(f"Average image level ROCAUC: {avg_image_level_ROCAUC:.3f}")
     logger.info(f"\n")
 
     ax.title.set_text('Average pixel ROCAUC: %.3f' % np.mean(avg_pixel_level_ROCAUC))
     ax.legend(loc="lower right")
     fig.tight_layout()
     fig.savefig(os.path.join(args.save_path, f'roc_curve_{args.backbone}.png'), dpi=100)
+
+    
+    ax1.title.set_text('Average image ROCAUC: %.3f' % np.mean(avg_image_level_ROCAUC))
+    ax1.legend(loc="lower right")
+    fig1.tight_layout()
+    fig1.savefig(os.path.join(args.save_path, f'roc_curve_{args.backbone}_image.png'), dpi=100)
 
 
 
