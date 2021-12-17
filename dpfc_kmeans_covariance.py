@@ -126,29 +126,29 @@ def main():
 
             # Kmeans 聚类
             kmeans_pkl = os.path.join(temp_path, f"test_{args.backbone}_{class_name}_gmm.pkl")
-            # if not os.path.exists(kmeans_pkl):
-            #     kmeans_ = {}
-            #     for k, v in train_feas.items():
-            #         logger.info(f"Model GMM {class_name} feature {k}...")
-            #         v = v.transpose(1, 3).flatten(0, 2)
-            #         _means_, _vars_ = _kgaussians_fun_gpu(v, K=center_nums[k])
-            #
-            #         kmeans_[k] = {'mean': _means_,
-            #                       'var': _vars_}
-            #     with open(kmeans_pkl, 'wb') as f:
-            #         pickle.dump(kmeans_, f)
-            # else:
-            #     with open(kmeans_pkl, 'rb') as f:
-            #         kmeans_ = pickle.load(f)
-            kmeans_ = {}
-            for k, v in train_feas.items():
-                # logger.info(f"Model GMM {class_name} feature {k}...")
-                print(f"Model GMM {class_name} feature {k}...")
-                v = v.transpose(1, 3).flatten(0, 2)
-                _means_, _vars_ = _kgaussians_fun_gpu(v, K=center_nums[k])
+            if not os.path.exists(kmeans_pkl):
+                kmeans_ = {}
+                for k, v in train_feas.items():
+                    logger.info(f"Model GMM {class_name} feature {k}...")
+                    v = v.transpose(1, 3).flatten(0, 2)
+                    _means_, _vars_ = _kgaussians_fun_gpu(v, K=center_nums[k])
+            
+                    kmeans_[k] = {'mean': _means_,
+                                  'var': _vars_}
+                with open(kmeans_pkl, 'wb') as f:
+                    pickle.dump(kmeans_, f)
+            else:
+                with open(kmeans_pkl, 'rb') as f:
+                    kmeans_ = pickle.load(f)
+            # kmeans_ = {}
+            # for k, v in train_feas.items():
+            #     # logger.info(f"Model GMM {class_name} feature {k}...")
+            #     print(f"Model GMM {class_name} feature {k}...")
+            #     v = v.transpose(1, 3).flatten(0, 2)
+            #     _means_, _vars_ = _kgaussians_fun_gpu(v, K=center_nums[k])
 
-                kmeans_[k] = {'mean': _means_,
-                              'var': _vars_}
+            #     kmeans_[k] = {'mean': _means_,
+            #                   'var': _vars_}
 
             test_img_list = []
             test_y_list = []

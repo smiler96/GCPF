@@ -11,8 +11,8 @@ MVTec_CLASS_NAMES = ['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut',
 # MVTec_CLASS_NAMES = ['bottle', 'cable', 'capsule', 'carpet', 'grid']
 # MVTec_CLASS_NAMES = [ 'screw', 'tile', 'toothbrush', 'transistor', 'wood', 'zipper']
 # MVTec_CLASS_NAMES = [ 'hazelnut']
-MVTec_CLASS_NAMES = ['leather', 'metal_nut', 'pill',
-                     'tile', 'toothbrush', 'transistor', 'wood', 'zipper']
+# MVTec_CLASS_NAMES = ['leather', 'metal_nut', 'pill',
+#                      'tile', 'toothbrush', 'transistor', 'wood', 'zipper']
 #
 # MVTec_CLASS_NAMES = ['capsule', 'carpet', 'grid',
 #                      'leather', 'metal_nut', 'pill', 'screw',
