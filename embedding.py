@@ -186,14 +186,7 @@ def _kgaussians_fun_gpu(X, K=10, max_iter=1000, batch_size=8096, tol=0.1):
                 str += f"{i}-{torch.sum(choice_cluster==i).item()}, "
             print(str)
             if (center_shift + var_shift) < tol:
-                break
-            # shift = torch.sum(pre_choice_cluster != choice_cluster)
-            # print(f"shift: {shift.item()}")
-            # if shift < tol:
-            #     break
-            # shift = torch.sum(init_choice_cluster != choice_cluster)
-            # if shift < 20:
-            #     break
+                break 
 
         k_men = init_centers.detach().cpu().numpy()
         k_var = k_var.detach().cpu().numpy()

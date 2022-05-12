@@ -38,8 +38,7 @@ def parse_args():
     parser.add_argument("--fea_batch", type=int, default=128)
 
     parser.add_argument("--time", type=int, default=1)
-    parser.add_argument("--data_root", type=str, default="D:/Dataset/mvtec_anomaly_detection/")
-    # parser.add_argument("--data_root", type=str, default="/home/dlwanqian/data/mvtec_anomaly_detection/")
+    parser.add_argument("--data_root", type=str, default="D:/Dataset/mvtec_anomaly_detection/") 
     parser.add_argument("--resize", type=int, default=256)
     parser.add_argument("--crop_size", type=int, default=224)
 
@@ -141,16 +140,7 @@ def main():
                     pickle.dump(kmeans_, f)
             else:
                 with open(kmeans_pkl, 'rb') as f:
-                    kmeans_ = pickle.load(f)
-            # kmeans_ = {}
-            # for k, v in train_feas.items():
-            #     # logger.info(f"Model GMM {class_name} feature {k}...")
-            #     print(f"Model GMM {class_name} feature {k}...")
-            #     v = v.transpose(1, 3).flatten(0, 2)
-            #     _means_, _vars_ = _kgaussians_fun_gpu(v, K=center_nums[k])
-
-            #     kmeans_[k] = {'mean': _means_,
-            #                   'var': _vars_}
+                    kmeans_ = pickle.load(f) 
 
             test_img_list = []
             test_y_list = []
