@@ -2,7 +2,7 @@ import os
 import torch
 import argparse
 import torch.nn.functional as F
-from torchvision.models.resnet import resnet50, wide_resnet50_2, wide_resnet101_2, resnet101, resnet152, resnext50_32x4d, resnext101_32x8d
+from torchvision.models.resnet import resnet34, resnet50, wide_resnet50_2, wide_resnet101_2, resnet101, resnet152, resnext50_32x4d, resnext101_32x8d
 import torchsummary
 from thop import profile
 from thop import clever_format
@@ -10,7 +10,7 @@ from thop import clever_format
 def parse_args():
     parser = argparse.ArgumentParser('DPFC-GMM')
 
-    parser.add_argument("--backbone", type=str, default='resnext50_32x4d')
+    parser.add_argument("--backbone", type=str, default='resnet50')
 
     parser.add_argument("--img_batch", type=int, default=32)
     parser.add_argument("--fea_batch", type=int, default=128)
@@ -44,14 +44,14 @@ def main():
     model.layer3[-1].register_forward_hook(_forward_hook)
     model = model.to(device).eval()
 
-    x = torch.rand([1, 3, 224, 224]).to(device)
+    x = torch.rand([1, 3, 256, 256]).to(device)
     # y = model(x)
     # torchsummary.summary(model, (3, 224, 224))
 
     flops, params = profile(model, inputs=(x,))
     flops, params = clever_format([flops, params], "%.3f")
-    print(f"flops: {flops}")
-    print(f"params: {params}")
+    print(f"[INFO] {args.backbone}-flops: {flops}")
+    print(f"[INFO] {args.backbone}-params: {params}")
     for i, feas in enumerate(output_feas):
         print(f"Layer {i+1} size is: {feas.shape}")
 
