@@ -1,1 +1,1 @@
-python dpfc_kmeans_covariance.py --k 10 --backbone wide_resnet50_2 --data_root mvtec_root  
+python GCPF.py --k 10 --backbone wide_resnet50_2 --data_root mvtec_root  
