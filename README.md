@@ -14,6 +14,8 @@ python GCPF.py --k 10 --backbone wide_resnet50_2 --data_root mvtec_root
 
 ## Citation
 
+If there is any help for your work, please consider citing this paper:
+
 ```
 @ARTICLE{9479740,
 author={Wan, Qian and Gao, Liang and Li, Xinyu and Wen, Long},journal={IEEE Transactions on Industrial Electronics},
@@ -24,4 +26,8 @@ pages={6182-6192},
 doi={10.1109/TIE.2021.3094452}
 }
 ```
+
+## Acknowledgment
+
+Thanks for the excellent work for [SPADE](https://github.com/byungjae89/SPADE-pytorch).
 
